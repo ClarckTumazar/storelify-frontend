@@ -23,6 +23,7 @@
   padding-block: 1.5vh;
   padding-inline: 3.5vh;
   gap: 1.5vh;
+  cursor: pointer;
   border: none;
   outline: none;
   color: rgb(0, 0, 0);
