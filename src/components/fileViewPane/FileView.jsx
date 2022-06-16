@@ -1,42 +1,48 @@
 import upload from "./upload-icon.svg";
 import "./FileView.css";
-import { useEffect, useRef, useState } from "react";
 import { storage } from "../../firebase";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
+import { useEffect, useRef, useState } from "react";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import formatFileSize from '../../utils/formatFileSize';
+import FileService from "../../service/fileService";
+import getFileType from "../../utils/getFileType";
 import { v4 } from "uuid";
 
 const FileView = () => {
   //* this contains who is the current user.
   const user = "clarck";
 
-
   //* this sets the state for what folder is currently accessed.
-  const [currentFolder, setCurrentFolder] 
-    = useState("images"); 
-
-
-  //* this  contains the list of files being fetched.
-  const [fileList, setFileList] 
-    = useState([]);
-
+  const [currentFolder, setCurrentFolder] = useState("images"); 
+  
+  //* this is the path in the firebase storage in where to store the files.
+  const [folderPath, setFolderPath] = useState(`${user}/${currentFolder}`)
 
   //* this contains the files metadata to be stored on MySql using Spring Boot.
-  const [fileData, setFileData] 
-    = useState({
-      fileName: "",
-      fileType: "",
-      fileSize: "",
-    });
-
-
-  //* this is the path in the firebase storage in where to store the files.
-  const [folderPath, setFolderPath] 
-    = useState(`${user}/${currentFolder}`)
-
-
+  const [fileList, setFileList] = useState();
+  
   //* this is used as a reference to accessed an input tag using another div.
   const hiddenFileInput = useRef(null);
+
+  const [loading, setLoading] = useState(false);
+  const [render, setRender] = useState(true);
+
+
+  //* this functions runs and parse the list of all files in the current folder.
+  useEffect(() => {
+    setLoading(true)
+    FileService.getAllFiles()
+      .then((response) => {
+        console.log(response.data)
+        setFileList(response.data)
+      })
+      .catch((error) => {
+        console.log(error)
+        alert('failed to get All files!')
+      });
+    setLoading(false)
+    setRender(false)
+  },[render]);
 
 
   //* this is the function that clicks the input tag programmatically.
@@ -49,47 +55,51 @@ const FileView = () => {
   const handleChange = (e) => {
     const file = e.target.files[0];
     const fileRef = ref( storage, `${folderPath}/${file.name + v4()}`);
+   
 
-    let newFileData = {
-      fileName: file.name,
-      fileType: file.type,
-      fileSize: formatFileSize(file.size),
-    };
-    setFileData((prev) => ({...prev, ...newFileData}));
-
+    //* uploads the file in the firebase
     uploadBytes(fileRef, file)
       .then((response) => {
-        console.log(response);
-        alert("file Uploaded!");
-      })
-
+        alert('file uploaded to firebase!')
+        console.log(response)
+        getDownloadURL(response.ref)
+          .then((url) => {
+           uploadFileData(file, url)
+          })
+      })  
       .catch((error) => {
         alert("file Upload Failed :(");
         return
       });
   };
-  console.log(fileData);
 
 
 
-//* this functions runs and parse the list of all files in the current folder.
-  useEffect(() => {
-    listAll(ref(storage, folderPath))
+  //* function to upload the file Data in MySql.
+  const uploadFileData = (file, url) => {
+
+    const fileExtension = file.name.split('.').pop()
+    const fileType = getFileType(fileExtension)
+
+     //* sets the file metadata to be sent to spring boot   
+     let newFileData = {
+      fileName: file.name,
+      fileType: fileType,
+      fileSize: formatFileSize(file.size),
+      fileUrl: url,
+    };
+
+    //* sends the file metadata in the backend (MySQL)
+    FileService.saveFile(newFileData)
       .then((response) => {
-        response.items.forEach((item) => {
-          getDownloadURL(item)
-            .then((url) => {
-              setFileList((prev) => [...prev, url]);
-            })
-            .catch((error) => {
-              alert("error in setting the file list");
-            });
-        });
+        alert('fileData uploaded to MySql!')
+        setRender(true)
       })
       .catch((error) => {
-        alert("unable to get list of files");
+        alert("error fileservice!");
       });
-  },[]);
+  }
+
 
   return (
     <div className="FileView">
@@ -101,7 +111,7 @@ const FileView = () => {
             src={upload}
             alt="upload-button"
           />
-          Upload
+          Upload file
         </div>
         <input
           type="file"
@@ -119,14 +129,30 @@ const FileView = () => {
             <th className="action-col"></th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td className="td-name">Clarck.jpeg</td>
-            <td>PDF</td>
-            <td>4MB</td>
-            <td></td>
-          </tr>
-        </tbody>
+
+
+        {!loading && (
+          <tbody>
+            {fileList?.length > 0 ? (
+              fileList.map((file) => (
+                <tr className='tr-item' key={file.fileid}>
+                  <td className="td-name">{file.fileName}</td>
+                  <td>{file.fileType}</td>
+                  <td>{file.fileSize}</td>
+                  <td><input type='checkbox' /></td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td>No files found!</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                
+                </tr>
+            )}
+          </tbody>
+        )}
       </table>
     </div>
   );

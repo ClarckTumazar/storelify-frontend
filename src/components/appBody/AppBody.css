@@ -1,5 +1,6 @@
 .AppBody {
-  height: 90vh;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  height: 91vh;
 }
