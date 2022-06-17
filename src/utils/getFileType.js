@@ -29,15 +29,106 @@ const audioExtensions = {
   wpl:	'Windows Media Player playlist',
 }
 
+const imageExtensions = {
+   ai:  'Adobe Illustrator file',
+  bmp:  'Bitmap image File',
+  gif:  'GIF/Graphical Interchange Format image',
+  ico:  'Icon file',
+ jpeg:  'JPEG image',
+  jpg:  'JPEG image',
+  max:  '3ds Max Scene File',
+  obj:  'Wavefront 3D Object File',
+  png:  'PNG / Portable Network Graphic image',
+   ps:  'PostScript file',
+  psd:  'PSD / Adobe Photoshop Document image',
+  svg:  'Scalable Vector Graphics file',
+  tif:  'TIFF image',
+ tiff:  'TIFF image',
+}
 
-function getFileType (type) {
+const fileExtensions = {
   
+  ods:	'OpenOffice Calc spreadsheet file',
+  xlr:  'Microsoft Works spreadsheet file',
+  xls:	'Microsoft Excel file',
+ xlsx:	'Microsoft Excel Open XML spreadsheet file',
+  doc:  'Microsoft Word file',
+ docx:  'Microsoft Word file',
+  odt:  'OpenOffice Writer document file',
+  msg:  'Outlook Mail Message',
+  pdf:  'PDF file',
+  rtf:  'Rich Text Format File',
+  tex:  'A LaTeX document file',
+  txt:  'Plain text file',
+  wks:  'Microsoft Works Word Processor Document file',
+  wps:  'Microsoft Works Word Processor Document file',
+  wpd:  'WordPerfect document',
+  key:	'Keynote presentation',
+  odp:	'OpenOffice Impress presentation file',
+  pps:	'PowerPoint slide show',
+  ppt:	'PowerPoint presentation',
+ pptx:	'PowerPoint Open XML presentation',
+accdb:	'Access 2007 Database File',
+  csv:	'Comma separated value file',
+  dat:	'Data file',
+   db:  'Database file',
+  dbf:  'Database file',
+  log:	'Log file',
+  mdb:	'Microsoft Access database file',
+  pdb:	'Program Database',
+  sav:	'Save file (e.g. game save file)',
+  sql:	'SQL/Structured Query Language database file',
+  tar:	'Linux / Unix tarball file archive',
+  bak:	'Backup file',
+  cab:  'Windows Cabinet file',
+  cfg:  'Configuration file',
+  cpl:  'Windows Control panel file',
+  cur:  'Windows cursor file',
+  dll:  'DLL file',
+  dmp:  'Dump file',
+  drv:  'Device driver file',
+ icns:  'macOS X icon resource file',
+  ico:  'Icon file',
+  ini:  'Initialization file',
+  lnk:  'Windows shortcut file',
+  msi:  'Windows installer package',
+  sys:  'Windows system file',
+  tmp:  'Temporary file',
+  asp:  'Active Server Page file',
+ aspx:  'Active Server Page file',
+  cer:  'Internet security certificate',
+  cfm:  'ColdFusion Markup file',
+  cgi:  'Perl script file',
+   pl:  'Perl script file',
+  css:  'Cascading Style Sheet file',
+  htm:  'HTML/Hypertext Markup Language file',
+ html:  'HTML/Hypertext Markup Language file',
+   js:  'JavaScript file',
+  jsp:	'Java Server Page file',
+ part:	'Partially downloaded file',
+  php:	'PHP Source Code file',
+  rss:	'RSS/Rich Site Summary file',
+xhtml:  'XHTML / Extensible Hypertext Markup Language file',
+}
+
+
+function getFileType (type, file) {
+  console.log(type)
+  if (imageExtensions.hasOwnProperty(type)) 
+    return imageExtensions[type]
+
   if (vidExtensions.hasOwnProperty(type)) 
     return vidExtensions[type]
+
   if (audioExtensions.hasOwnProperty(type)) 
     return audioExtensions[type]
 
-    
+  if (fileExtensions.hasOwnProperty(type)) 
+    return fileExtensions[type]
+
+  if (file.type) return file.type
+  return "Can't determined file type"
+
 }
 
 export default getFileType;

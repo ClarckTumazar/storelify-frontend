@@ -13,6 +13,10 @@ class FileService {
   getAllFiles() {
     return axios.get(STORELIFY_API_BASE_URL);
   }
+
+  deleteAllFiles(fileIdList) {
+    return axios.post(STORELIFY_API_BASE_URL + '/delete', fileIdList);
+  }
 }
 
 
