@@ -1,12 +1,19 @@
 import './App.css';
-import NavBar from './components/navbar/NavBar';
-import AppBody from './components/appBody/AppBody';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import HeroPage from './components/heroPage/HeroPage';
+import Home from './components/Home/Home';
+
 
 function App() {
   return (
     <>
-      <NavBar />
-      <AppBody />
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<HeroPage />} />
+        <Route path='/' element={<HeroPage />} />
+        <Route path='/home' element={<Home />} />
+      </Routes>
+    </BrowserRouter>
     </>
   );
 }

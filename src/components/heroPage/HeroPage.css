@@ -1,0 +1,89 @@
+.hero-page-body {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: left;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-inline: 25px;
+  padding-block: 15px;
+  width: 100%;
+  height: 7vh;
+}
+
+.body {
+  padding: 50px 100px;
+}
+
+h1 {
+  margin-bottom: 15px;
+  color: rgb(67, 67, 67);
+  font-weight: 600;
+  font-size: 4vh;
+}
+p {
+  margin: 0px;
+  max-width: 50%;
+  font-size: 2.2vh;
+}
+
+.hero-page-button-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 35px;
+  gap: 2vh; 
+}
+
+
+.create-account-button, .login-button {
+  cursor: pointer;
+  padding-inline: 2.5vh;
+  padding-block: 1.3vh;
+  border-radius: 5px;
+  background-color: #ebebeb7c;
+  font-weight: 600;
+  color: rgb(67, 67, 67);
+  border-radius: 5vh;
+}
+
+.create-account-button:hover {
+ background-color: #e5e5e5;
+}
+
+.create-account-button:active {
+  background-color: #cccccc;
+}
+
+.login-button {
+  color: #ff9900;
+  background-color: #FFF7EB;
+  border: none;
+}
+
+.login-button:hover {
+  background-color: #ff9900;
+  color: #FFF7EB;
+}
+
+.login-button:active {
+  background-color: #d27e00;
+
+}
+.hero-page-bg {
+  position: absolute;
+  margin-top: 20vh;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-end;
+}

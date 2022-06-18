@@ -1,16 +1,19 @@
 import "./FileView.css";
+import { v4 } from "uuid";
+
 import upload from "./upload-icon.svg";
 import cancel from "../../icons/cancel-icon.svg";
+
 import { storage } from "../../firebase";
 import { useEffect, useRef, useState } from "react";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+
+import getFileType from "../../utils/getFileType";
 import formatFileSize from '../../utils/formatFileSize';
 import FileService from "../../service/fileService";
-import getFileType from "../../utils/getFileType";
 import fileService from "../../service/fileService";
-import fileDownload from 'js-file-download'
 import FileRow from "./FileRow";
-import { v4 } from "uuid";
+
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 const FileView = () => {
   //* this contains who is the current user folder and folderPath.
@@ -19,13 +22,18 @@ const FileView = () => {
   const [folderPath, setFolderPath] = useState(`${user}/${currentFolder}`)
 
 
+
   //* this contains the files metadata to be stored on MySql using Spring Boot.
   const [fileList, setFileList] = useState();
+
+
 
   //* this holds the file data for selected rows/ clicked checkboxes.
   const [firebaseIdList, setFirebaseIdList] = useState([]);
   const [fileIdList, setFileIdList] = useState([]);
   const [fileNameList, setFileNameList] = useState([]);
+
+
 
   //* Other useState and References needed.
   const hiddenFileInput = useRef(null);
@@ -33,7 +41,10 @@ const FileView = () => {
   const [render, setRender] = useState(true);
   const [selectedFileCtr, setSelectedFileCtr] = useState(0);
 
-  //* this functions runs and parse the list of all files in the current folder.
+
+
+
+  //* Parse FILES in TABLE
   useEffect(() => {
     setLoading(true)
     FileService.getAllFiles()
@@ -49,16 +60,40 @@ const FileView = () => {
     setRender(false)
   },[render]);
 
-  //* this is the function that clicks the input tag programmatically.
+
+
+
+  //* Clicks checkbox PROGRAMMATICALLY
   const handleClick = () => {
     hiddenFileInput.current.click();
   };
 
-  //* this handles the change in file input and uploads the file in firebase.
+
+
+
+  //* UPLOAD file to FireBase
   const uploadToFirebase = (e) => {
     const file = e.target.files[0];
-    const fileName = `${file.name + v4()}`
+    const fileName = `${file.name}`
     const fileRef = ref( storage, `${folderPath}/${fileName}`);
+
+    console.log(fileList)
+    console.log(fileName)
+    console.log(fileList.includes(fileName))
+    
+    let fileExist = false
+    fileList.forEach(file => {
+      if (file['fileName'] == fileName) {
+        fileExist = true
+        return 
+      }
+    });
+
+    if (fileExist) {
+      alert("upload error: File name already exist! Change file name to continue")
+      return
+    }
+    
    
     uploadBytes(fileRef, file)
       .then((response) => {
@@ -75,14 +110,17 @@ const FileView = () => {
       });
   };
 
-  //* function to upload the file Data in MySql.
+
+
+
+  //* UPLOAD File Data To MySQL
   const uploadFileData = (file, fileName, url) => {
 
     const fileExtension = file.name.split('.').pop()
     const fileType = getFileType(fileExtension, file)
     console.log(file)
 
-     //* sets the file metadata to be sent to spring boot   
+
      let newFileData = {
       firebaseId: fileName,
       fileName: file.name,
@@ -90,6 +128,7 @@ const FileView = () => {
       fileSize: formatFileSize(file.size),
       fileUrl: url,
     };
+
 
     //* sends the file metadata in the backend (MySQL)
     FileService.saveFile(newFileData)
@@ -102,7 +141,10 @@ const FileView = () => {
       });
   }
 
-  //* function that sets the checkbox state to true and updates the UI and UrlList
+
+
+
+  //* Sets CHECKBOX state to TRUE and updates the UI
   const checkboxClicked = (file) => {  
     document.getElementById('delete-button').classList.remove('hide-button')
     document.getElementById('download-button').classList.remove('hide-button')
@@ -115,7 +157,7 @@ const FileView = () => {
     if (firebaseIdList.includes(file.firebaseId) === false) {
       setFirebaseIdList((prev) => [...prev, file.firebaseId])
       setFileIdList((prev) => [...prev, file.fileid])
-      setFileNameList((prev) => [...prev, file.fileName])
+      setFileNameList((prev) => [...prev, [file.fileName, file.fileUrl]])
       setSelectedFileCtr((ctr) => ctr + 1)
       return
     }
@@ -129,7 +171,7 @@ const FileView = () => {
       })
 
       setFileNameList((prevElement) => {
-        return prevElement.filter((id) => id !== file.fileName)
+        return prevElement.filter((id) => id[0] !== file.fileName)
       })
       
       selectedFileCtr > 0 && (setSelectedFileCtr((ctr) => ctr - 1))
@@ -140,7 +182,10 @@ const FileView = () => {
   console.log(fileIdList)
   console.log(selectedFileCtr)
 
-  //* uncheckes all the checkbox clicked
+
+
+
+  //* Unchecks all the checkbox clicked
   const uncheckedAll = () => {
     let checkboxList = document.getElementsByClassName('td-checkbox')
     let size = fileList?.length
@@ -153,7 +198,10 @@ const FileView = () => {
     }
   }
 
-  //* deletes all the selected file. 
+
+
+
+  //* Deletes all the selected file. 
   const deleteSelectedFile = () => {
     //* delete in firebase
     firebaseIdList.map((firebaseId) => {
@@ -184,19 +232,36 @@ const FileView = () => {
   }
 
 
+
+  //* Downloads all the selected file. 
   const downloadSelectedFile = () => {
-    firebaseIdList.map((id, index) => {
-      return (
-        fileDownload(id, fileNameList[index])
-      )
+    alert('im clicked! download')
+    console.log(fileNameList)
+    fileNameList.map((file) => {
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = (event) => {
+        const blob = xhr.response;
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = file[0]; // first element in file array is fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      };
+      xhr.open('GET', file[1]); // second element in file arrat is the downloadUrl
+      xhr.send();
     })
     uncheckedAll();
   }
 
+
+
+
   //* hides the delete and downlaod button when no file selected.
   useEffect(() => {
-  //* function that checks the url length and hide delete button if 0
-  if (selectedFileCtr === 0){
+    if (selectedFileCtr === 0){
       document.getElementById('delete-button').classList.add('hide-button')
       document.getElementById('download-button').classList.add('hide-button')
       document.getElementById('selected-file-label').classList.add('hide-button')
@@ -207,6 +272,7 @@ const FileView = () => {
     }
   }, [selectedFileCtr])
   
+
 
 
   return (

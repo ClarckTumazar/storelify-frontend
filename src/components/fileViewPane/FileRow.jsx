@@ -15,7 +15,6 @@ const FileRow = ({file, checkboxClicked}) => {
       <input 
         className='td-checkbox'
         type='checkbox' 
-        value={file.fileUrl} 
         ref={checkboxRef}
         //* we need to pass the file object on change to be later deleted in firebase and SQL
         onChange={(e) => checkboxClicked(file)} 
