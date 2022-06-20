@@ -2,10 +2,9 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
-
 const firebaseConfig = {
-  apiKey: "AIzaSyBcLAa3FPX5ISNJKyxVQLTR3H2O9yPwnFw",
-  authDomain: "storelify-database.firebaseapp.com",
+  apiKey: `${process.env.REACT_APP_API_KEY}`,
+  authDomain: `${process.env.REACT_APP_AUTH_DOMAIN}`,
   projectId: "storelify-database",
   storageBucket: "storelify-database.appspot.com",
   messagingSenderId: "86807473324",

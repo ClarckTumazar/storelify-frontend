@@ -48,8 +48,8 @@ p {
   padding-inline: 2.5vh;
   padding-block: 1.3vh;
   border-radius: 5px;
+  font-size: 2.5vh;
   background-color: #ebebeb7c;
-  font-weight: 600;
   color: rgb(67, 67, 67);
   border-radius: 5vh;
 }

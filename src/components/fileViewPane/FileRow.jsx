@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import formatFileSize from '../../utils/formatFileSize';
 
 
 const FileRow = ({file, checkboxClicked}) => {
@@ -10,7 +11,7 @@ const FileRow = ({file, checkboxClicked}) => {
         onClick={(e) => checkboxRef.current.click()}>
       <td className="td-name"><div className="td-name-div">{file.fileName}</div></td>
       <td className="td-type"><div className="td-type-div">{file.fileType}</div></td>
-      <td>{file.fileSize}</td>
+      <td>{formatFileSize(file.fileSize)}</td>
       <td className='td-action'>
       <input 
         className='td-checkbox'

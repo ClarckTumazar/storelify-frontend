@@ -1,6 +1,6 @@
 import React from 'react'
 
-const HeroPageStart = ({setToRegister}) => {
+const HeroPageStart = ({setToRegister, setToLogin}) => {
   return (
     <>
       <h1>
@@ -12,11 +12,11 @@ const HeroPageStart = ({setToRegister}) => {
         face the hassle of finding free cloud storage.
       </p>
       <div className="hero-page-button-group">
-        <div className="create-account-button" onClick={setToRegister}>Create account</div>
-        <div className="login-button" >Login now</div>
+        <div className="create-account-button" onClick={(e) => setToRegister(e)}>Create account</div>
+        <div className="login-button" onClick={(e) => setToLogin(e)}>Login now</div>
       </div>
     </>
-  )
-}
+  ) 
+} 
 
 export default HeroPageStart

@@ -6,12 +6,12 @@ const STORELIFY_API_BASE_URL
 class FileService {
 
   saveFile(file) {
-    return axios.post(STORELIFY_API_BASE_URL, file);
+    return axios.post(STORELIFY_API_BASE_URL + '/save', file);
 
   }
   
-  getAllFiles() {
-    return axios.get(STORELIFY_API_BASE_URL);
+  getAllFiles(userEmail) {
+    return axios.post(STORELIFY_API_BASE_URL + `/get/${userEmail}`);
   }
 
   deleteAllFiles(fileIdList) {

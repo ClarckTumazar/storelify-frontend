@@ -4,23 +4,44 @@ import "./HeroPage.css";
 import bg from "../../img/heroPageBg.svg";
 import HeroPageStart from "./HeroPageStart";
 import RegisterForm from "./RegisterForm";
+import LoginForm from "./LoginForm";
+
+
 const HeroPage = () => {
 
   const [currentState, setCurrentState] = useState('welcome');
   const [pageLoader, setPageLoader] = useState(<HeroPageStart />);
-  
-  const setToRegister = () => {
+
+  const setToRegister = (e) => {
+    e.preventDefault()
     setCurrentState('register')
-    setPageLoader(<RegisterForm />)
   }
-  
+
+  const setToLogin = (e) => {
+    e.preventDefault()
+    setCurrentState('Login')
+    console.log("im clicked!")
+  } 
+
   useEffect(() => {
     if (currentState === 'welcome')
-      setPageLoader(<HeroPageStart setToRegister={setToRegister}/>)
+      setPageLoader(<HeroPageStart 
+        setToRegister={setToRegister}
+        setToLogin={setToLogin}
+        />)
+    
+    if (currentState === 'register')
+      setPageLoader(<RegisterForm 
+        setToLogin={setToLogin}
+        />)
+    
+    if (currentState === 'Login')
+      setPageLoader(<LoginForm 
+        setToRegister={setToRegister}
+        />)
+
   },[currentState])
 
-  
-  
 
   return (
     <>

@@ -1,5 +1,5 @@
 
-const vidExtensions = {
+export const vidExt = {
   avi:	'Audio Video Interleave File',
   flv:	'Adobe Flash Video File',
  h264:  'H.264 video File',
@@ -15,7 +15,7 @@ const vidExtensions = {
   wmv:  'Windows Media Video File',
 }
 
-const audioExtensions = {
+export const audioExt = {
   aif:	'AIF/Audio Interchange audio file',
   cda:	'CD audio track file',
   iff:	'Interchange File Format',
@@ -29,7 +29,7 @@ const audioExtensions = {
   wpl:	'Windows Media Player playlist',
 }
 
-const imageExtensions = {
+export const imageExt = {
    ai:  'Adobe Illustrator file',
   bmp:  'Bitmap image File',
   gif:  'GIF/Graphical Interchange Format image',
@@ -46,7 +46,7 @@ const imageExtensions = {
  tiff:  'TIFF image',
 }
 
-const fileExtensions = {
+export const fileExt = {
   
   ods:	'OpenOffice Calc spreadsheet file',
   xlr:  'Microsoft Works spreadsheet file',
@@ -112,23 +112,21 @@ xhtml:  'XHTML / Extensible Hypertext Markup Language file',
 }
 
 
-function getFileType (type, file) {
+export function getFileType (type, file) {
   console.log(type)
-  if (imageExtensions.hasOwnProperty(type)) 
-    return imageExtensions[type]
+  if (imageExt.hasOwnProperty(type)) 
+    return imageExt[type]
 
-  if (vidExtensions.hasOwnProperty(type)) 
-    return vidExtensions[type]
+  if (vidExt.hasOwnProperty(type)) 
+    return vidExt[type]
 
-  if (audioExtensions.hasOwnProperty(type)) 
-    return audioExtensions[type]
+  if (audioExt.hasOwnProperty(type)) 
+    return audioExt[type]
 
-  if (fileExtensions.hasOwnProperty(type)) 
-    return fileExtensions[type]
+  if (fileExt.hasOwnProperty(type)) 
+    return fileExt[type]
 
   if (file.type) return file.type
   return "Can't determined file type"
 
 }
-
-export default getFileType;

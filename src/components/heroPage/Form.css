@@ -1,6 +1,6 @@
 form {
   margin-bottom: 15px;
-  width: 40%;
+  width: 35%;
   display: flex;
   flex-direction: column;
 }
@@ -8,19 +8,39 @@ form {
 .login-form-header {
   font-weight: 600;
   font-size: 4vh;
-  margin-bottom: 4vh;
+  margin-bottom: 2.5vh;
 }
 
 .sub-header {
   font-size: 2.2vh;
-  margin-bottom: 2.5vh;
+  padding-block: 1.5vh;
+}
+
+.sub-header-failed-message {
+  background-color: #ffffff;  
+  color: #353535;
+  border: 1px #ff9900 solid;
+  padding-block: 2vh;
+  padding-inline: 2.5vh;
+  border-radius: .5vh;
+}
+
+.sub-header-link {
+  color: #ff9900;
+  font-weight: 500;
+}
+
+.input-group {
+  display: flex;
+  padding-block: 2.5vh;
+  flex-direction: column;
+  justify-items: flex-end;
 }
 
 input {
   border: none;
   outline: none;  
   padding: 15px;
-  margin-top: 2.5vh;
   font-size: 2.8vh;
   border-radius: 5px;
   font-family: Google sans;
@@ -36,6 +56,10 @@ input:focus {
   border: 1px #ff9900 solid;
 }
 
+.input-password {
+  margin-top: 2.5vh;
+}
+
 button {
   border: none;
   outline: none;
@@ -44,7 +68,6 @@ button {
   color: white;
   font-size: 2.8vh;
   border-radius: 5px;
-  margin-top: 2.5vh;
   font-family: Google sans;
   background-color: #ff9900;
 } 
@@ -65,8 +88,13 @@ button:clicked {
 }
 
 a {
+  cursor: pointer;
   color: #ff9900;
   text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .error-message {

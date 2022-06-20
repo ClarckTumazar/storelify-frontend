@@ -7,10 +7,15 @@ class UserService {
 
   saveUser(user) {
     return axios.post(STORELIFY_API_BASE_URL, user);
-
   }
   
+  checkUser(user) {
+    return axios.post(STORELIFY_API_BASE_URL + "/check", user);
+  }
   
+  checkPassword(user) {
+    return axios.post(STORELIFY_API_BASE_URL + "/match", user);
+  }
 }
 
 
