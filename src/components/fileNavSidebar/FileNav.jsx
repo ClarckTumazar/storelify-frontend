@@ -29,7 +29,7 @@ const FileNav = ({setActiveButton}) => {
     else if(vid) { setActiveButton('Videos') }
     else if(music) { setActiveButton('Music') }
     else if(file) { setActiveButton('Files') }
-  }, [setActive])
+  }, [all, pic, vid, music, file, setActiveButton])
 
 
   return (

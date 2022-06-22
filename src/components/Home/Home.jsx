@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import NavBar from '../navbar/NavBar';
 import AppBody from '../appBody/AppBody';
 import { useParams } from 'react-router-dom';

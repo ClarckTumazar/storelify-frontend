@@ -49,6 +49,41 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
   const [totalFileSize, setTotalFileSize] = useState();
 
 
+  
+  //* Deletes all the selected file.
+  const deleteSelectedFile = () => {
+    //* delete in firebase
+    fileNameAndUrlList.map((file) => {
+      return deleteObject(ref(storage, `${folderPath}/${file[0]}`))
+        .then((response) => {
+          deleteFilesInMySql()
+        })
+        .catch((error) => {
+          console.log("file deletion failed :(");
+          console.log(error);
+        });
+    });
+  };
+
+  
+  //* delete in sql
+  const deleteFilesInMySql = () => {
+    fileService
+      .deleteAllFiles(fileIdList)
+      .then((response) => {
+        console.log(response);
+        alert("SUCCESFULL DELETION MYSQL");
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("Failed to delete all in mysql");
+      });
+
+    uncheckedAll();
+    setRender(true)
+  }    
+
+
   //* Parse FILES in TABLE
   useEffect(() => {
     setLoading(true);
@@ -65,7 +100,7 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
       });
     setLoading(false);
     setRender(false);
-  }, [render, activeButton]);
+  }, [render, activeButton]); 
 
   console.log(fileList?.length);
 
@@ -252,37 +287,8 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
     }
   };
 
-  //* Deletes all the selected file.
-  const deleteSelectedFile = () => {
-    //* delete in firebase
-    fileNameAndUrlList.map((file) => {
-      return deleteObject(ref(storage, `${folderPath}/${file[0]}`))
-        .then((response) => {
-          console.log(response);
-        })
-        .catch((error) => {
-          console.log("file deletion failed :(");
-          console.log(error);
-        });
-      setRender(true)
-    });
-
-    //* delete in sql
-    fileService
-      .deleteAllFiles(fileIdList)
-      .then((response) => {
-        console.log(response);
-        alert("SUCCESFULL DELETION MYSQL");
-      })
-      .catch((error) => {
-        console.log(error);
-        alert("Failed to delete all in mysql");
-      });
-
-    uncheckedAll();
-    setRender(true);
-  };
-
+    
+ 
   //* Downloads all the selected file.
   const downloadSelectedFile = () => {
     alert("im clicked! download");

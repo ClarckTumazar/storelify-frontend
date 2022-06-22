@@ -23,7 +23,9 @@ const StoragePane = ({storage}) => {
   }, [storage]);
 
   useEffect(() => {
-    setWidthSize(Math.floor((val / 35) * 100));
+    if(!(sufix === "kB" || sufix === "B"))
+      setWidthSize(Math.floor((val / 35) * 100));
+    else setWidthSize(1)
   }, [val])
   console.log(widthSize)
 
