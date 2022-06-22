@@ -109,6 +109,7 @@ accdb:	'Access 2007 Database File',
   php:	'PHP Source Code file',
   rss:	'RSS/Rich Site Summary file',
 xhtml:  'XHTML / Extensible Hypertext Markup Language file',
+  zip:  'Archive zip file'
 }
 
 

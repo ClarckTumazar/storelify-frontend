@@ -14,7 +14,6 @@ import {
   audioExt,
   fileExt,
 } from "../../utils/getFileType";
-import formatFileSize from "../../utils/formatFileSize";
 import FileService from "../../service/fileService";
 import fileService from "../../service/fileService";
 import FileRow from "./FileRow";
@@ -27,9 +26,9 @@ import {
 } from "firebase/storage";
 import StoragePane from "./StoragePane";
 
-const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
+const FileView = ({ userEmail, activeButton }) => {
   //* this contains who is the current userEmail folder and folderPath.
-  console.log(userEmail);
+  console.log(">>>>>>RE-RENDERING FILEVIEW<<<<<<<")
   const [currentFolder, setCurrentFolder] = useState("");
   const [folderPath, setFolderPath] = useState(`${userEmail}`);
 
@@ -50,44 +49,12 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
 
 
   
-  //* Deletes all the selected file.
-  const deleteSelectedFile = () => {
-    //* delete in firebase
-    fileNameAndUrlList.map((file) => {
-      return deleteObject(ref(storage, `${folderPath}/${file[0]}`))
-        .then((response) => {
-          deleteFilesInMySql()
-        })
-        .catch((error) => {
-          console.log("file deletion failed :(");
-          console.log(error);
-        });
-    });
-  };
-
-  
-  //* delete in sql
-  const deleteFilesInMySql = () => {
-    fileService
-      .deleteAllFiles(fileIdList)
-      .then((response) => {
-        console.log(response);
-        alert("SUCCESFULL DELETION MYSQL");
-      })
-      .catch((error) => {
-        console.log(error);
-        alert("Failed to delete all in mysql");
-      });
-
-    uncheckedAll();
-    setRender(true)
-  }    
 
 
   //* Parse FILES in TABLE
   useEffect(() => {
     setLoading(true);
-    console.log("Re-rending");
+    console.log("USE EFFECT: GET-ALL-FILES (render, activebutton)");
     setCurrentFolder(activeButton);
     FileService.getAllFiles(userEmail)
       .then((response) => {
@@ -102,21 +69,40 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
     setRender(false);
   }, [render, activeButton]); 
 
-  console.log(fileList?.length);
+  console.log(`fileList: ${fileList?.length}`);
+  console.log(`render value: ${render}`)
+  console.log(`Current active button: ${activeButton}`);
+
 
 
 //* sets the FilteredList to the original
   useEffect(() => {
+    console.log("USE EFFECT: SET FILTERED LIST, GET FILE SIZE (fileList)");
     setFilteredList(fileList);
-    console.log(fileList);
     getFileSize();
   }, [fileList]);
+  console.log(`filtered List size: ${filteredList?.length}`)
+  console.log(`Current total file size: ${totalFileSize}`)
 
 
+  //* Get the total size of all files in the List
+  const getFileSize = () => {
+    console.log("FUNCTION: GetFileSize")
+    let tFileSize = 0
+    if (fileList?.length !== 0) {
+      fileList?.map((file) => {
+        //setTotalFileSize((prev) => [...prev, prev + file.fileSize])
+        tFileSize = tFileSize + file.fileSize;
+      });
+    }
+    console.log(`tFileSize: ${tFileSize}`)
+    setTotalFileSize(tFileSize)
+
+  };
   
   //* Filter the list based on active button
   useEffect(() => {
-    console.log(filteredList);
+    console.log(`USE EFFECT: Filtering the list`);
     if (activeButton === "Pictures") {
       setFilteredList((prevElement) => {
         return prevElement.filter((file) =>
@@ -139,7 +125,6 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
           audioExt.hasOwnProperty(file.fileName.split(".").pop())
         );
       });
-    console.log(filteredList)
     }
 
     if (activeButton === "Files") {
@@ -150,20 +135,9 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
       });
     }
   }, [fileList, currentFolder]);
-  console.log(filteredList);
+  console.log(`filteredList: ${filteredList?.length}`)
 
-  //* Get the total size of all files in the List
-  const getFileSize = () => {
-    let tFileSize = 0
-    if (fileList?.length !== 0) {
-      fileList?.map((file) => {
-        //setTotalFileSize((prev) => [...prev, prev + file.fileSize])
-        tFileSize = tFileSize + file.fileSize;
-      });
-      setTotalFileSize(tFileSize)
-    }
-  };
-  console.log(totalFileSize)
+ 
 
 
   //* Clicks checkbox PROGRAMMATICALLY
@@ -171,15 +145,49 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
     hiddenFileInput.current.click();
   };
 
+
+  //* Deletes all the selected file.
+  const deleteSelectedFile = () => {
+
+    //* Delete first in firebase
+    fileNameAndUrlList.map((file) => {
+      return deleteObject(ref(storage, `${folderPath}/${file[0]}`))
+        .then((response) => {
+        })
+        .catch((error) => {
+          console.log("file deletion failed :(");
+          console.log(error);
+        });
+    });
+    deleteFilesInMySql()
+  };
+
+  
+  //* delete in sql 
+  const deleteFilesInMySql = () => {
+    fileService.deleteAllFiles(fileIdList)     
+      .then((response) => {
+        alert("SUCCESFULL DELETION MYSQL")
+        uncheckedAll()
+        setRender(true)
+      })
+      .catch((error) => {
+        console.log(error);
+        alert("Failed to delete all in mysql");
+      });
+  }    
+
+
+
   //* UPLOAD file to Firebase
   const uploadToFirebase = (e) => {
     const file = e.target.files[0];
     const fileName = `${file.name}`;
     const fileRef = ref(storage, `${folderPath}/${fileName}`);
 
-    console.log(fileList);
-    console.log(fileName);
-    console.log(fileList.includes(fileName));
+    // console.log(fileList);
+    // console.log(fileName);
+    // console.log(fileList.includes(fileName));
 
     let fileExist = false;
     fileList.forEach((file) => {
@@ -191,7 +199,8 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
 
     if (fileExist) {
       alert(
-        "upload error: File name already exist! Change file name to continue"
+        "upload error: File name already exist! " + 
+        "Change file name to continue"
       );
       return;
     }
@@ -199,7 +208,7 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
     uploadBytes(fileRef, file)
       .then((response) => {
         alert("file uploaded to firebase!");
-        console.log(response);
+        console.log(`upload firebase response: ${response}`);
         getDownloadURL(response.ref).then((url) => {
           uploadFileData(file, url);
         });
@@ -214,8 +223,8 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
   const uploadFileData = (file, url) => {
     const fileExtension = file.name.split(".").pop();
     const fileType = getFileType(fileExtension, file);
-    console.log(file);
-    console.log(formatFileSize(file.size));
+    // console.log(file);
+    // console.log(formatFileSize(file.size));
 
     let newFileData = {
       userEmail: userEmail,
@@ -225,8 +234,8 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
       fileUrl: url,
     };
 
-    console.log(file.size);
-    console.log(file.size + file.size);
+    // console.log(file.size);
+    // console.log(file.size + file.size);
 
     //* sends the file metadata in the backend (MySQL)
     FileService.saveFile(newFileData)
@@ -271,17 +280,35 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
       return;
     }
   };
-  console.log(fileIdList);
-  console.log(selectedFileCtr);
+  console.log(`selected id list: ${fileIdList}`);
+  console.log(`selected row counter: ${selectedFileCtr}`);
+
+
 
   //* Unchecks all the checkbox clicked
   const uncheckedAll = () => {
     let checkboxList = document.getElementsByClassName("td-checkbox");
+    let size = filteredList?.length;
+    let ctr = 0;
+
+      
+    for (ctr; ctr < size; ctr++) {
+      if (checkboxList[ctr].checked === true) {
+        console.log(checkboxList[ctr])
+        checkboxList[ctr].click();
+      }
+    }
+  };
+
+  //* Checks all the checkbox clicked
+  const checkedAll = () => {
+    let checkboxList = document.getElementsByClassName("td-checkbox");
     let size = fileList?.length;
     let ctr = 0;
 
+    console.log(checkboxList)
     for (ctr; ctr < size; ctr++) {
-      if (checkboxList[ctr].checked === true) {
+      if (checkboxList[ctr].checked === false) {
         checkboxList[ctr].click();
       }
     }
@@ -291,8 +318,7 @@ const FileView = ({ userEmail, activeButton, setStorage, storageSize }) => {
  
   //* Downloads all the selected file.
   const downloadSelectedFile = () => {
-    alert("im clicked! download");
-    console.log(fileNameAndUrlList);
+    console.log(`downloading: ${fileNameAndUrlList}`);
     fileNameAndUrlList.map((file) => {
       const xhr = new XMLHttpRequest();
       xhr.responseType = "blob";

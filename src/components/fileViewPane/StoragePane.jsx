@@ -11,6 +11,7 @@ const StoragePane = ({storage}) => {
     const bytes = storage;
     const sufixes = ["B", "kB", "MB", "GB", "TB"];
 
+    console.log("inside storagePane first useEffect")
     if (storage > 0) { 
       const i = Math.floor(Math.log(bytes) / Math.log(1024));
       setVal((bytes / Math.pow(1024, i)).toFixed(1));
@@ -23,11 +24,12 @@ const StoragePane = ({storage}) => {
   }, [storage]);
 
   useEffect(() => {
+    console.log("inside storagePane second useEffect")
     if(!(sufix === "kB" || sufix === "B"))
       setWidthSize(Math.floor((val / 35) * 100));
     else setWidthSize(1)
   }, [val])
-  console.log(widthSize)
+  console.log(`widthSize: ${widthSize}`)
 
   // useEffect(() => {
   //   const storageFill = document.getElementById("storage-fill")
